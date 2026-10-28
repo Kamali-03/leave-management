@@ -1,10 +1,13 @@
 {
+  "homepage": "http://kamali-03.github.io/leave-management",
   "name": "leave-management",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "predeploy": "npm run build" ,
+    "deploy" : "gh-pages-d build"
   },
   "keywords": [],
   "author": "",
