@@ -2,13 +2,16 @@
 {
   "name": "leave-management",
   "version": "1.0.0",
-  "description": "Leave Management Backend",
+  "description": "Leave Management",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },
+  "homepage": "https://kamali-03.github.io/leave-management",
+  "type": "commonjs",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^5.3.0",
-    "mongoose": "^9.11.2"
+    "mongoose": "^9.1.2"
   }
 }
