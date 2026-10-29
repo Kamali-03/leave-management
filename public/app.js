@@ -8,11 +8,13 @@ function showMessage(message, type = "error") {
 }
 
 async function api(url, options = {}) {
-    const response = await fetch(url, {
+    const API_URL = "https://leave-management-6.onrender.com";
+    const response = await fetch(${API_URL}${url}, {
         ...options,
         headers: {
             ...(options.body ? { "Content-Type": "application/json" } : {}),
             ...options.headers
+        
         }
     });
 
