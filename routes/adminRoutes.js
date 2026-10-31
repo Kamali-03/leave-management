@@ -1,3 +1,4 @@
+
 const express = require("express");
 const router = express.Router();
 
@@ -33,6 +34,11 @@ router.post("/login", async (req, res) => {
             role: "admin"
         });
 
+        // Diagnostic logs (never log passwords or hashes)
+        console.log("ADMIN FOUND:", !!admin);
+        console.log("PASSWORD RECEIVED:", !!password);
+        console.log("PASSWORD HASH EXISTS:", !!admin?.passwordHash);
+
         if (!admin || !admin.passwordHash) {
             return res.status(401).json({
                 message: "Invalid admin email or password"
@@ -44,10 +50,16 @@ router.post("/login", async (req, res) => {
             admin.passwordHash
         );
 
+        console.log("PASSWORD MATCH:", isMatch);
+
         if (!isMatch) {
             return res.status(401).json({
                 message: "Invalid admin email or password"
             });
+        }
+
+        if (!process.env.JWT_SECRET) {
+            throw new Error("JWT_SECRET is missing");
         }
 
         const token = jwt.sign(
@@ -59,7 +71,7 @@ router.post("/login", async (req, res) => {
             { expiresIn: "8h" }
         );
 
-        res.json({
+        return res.json({
             message: "Admin login successful",
             token,
             admin: {
@@ -69,9 +81,9 @@ router.post("/login", async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Admin login error:", error);
+        console.error("Admin login error:", error.message);
 
-        res.status(500).json({
+        return res.status(500).json({
             message: "Admin login failed"
         });
     }
