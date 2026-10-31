@@ -1,6 +1,6 @@
 
 const token = sessionStorage.getItem("adminToken");
-
+const API_BASE_URL = "https://leave-management-6.onrender.com";
 const tableBody = document.getElementById("leave-table-body");
 const message = document.getElementById("admin-message");
 
