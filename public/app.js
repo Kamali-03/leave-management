@@ -10,7 +10,7 @@ function showMessage(message, type = "error") {
 }
 
 async function api(url, options = {}) {
-   const API_URL = "http://localhost:5050";
+   const API_URL = " ";
     const response = await fetch(`${API_URL}${url}`, {
         ...options,
         headers: {
