@@ -1,4 +1,6 @@
+
 let userId = null;
+let adminToken = null;
 
 const $ = (id) => document.getElementById(id);
 
@@ -8,13 +10,12 @@ function showMessage(message, type = "error") {
 }
 
 async function api(url, options = {}) {
-    const API_URL = "https://leave-management-6.onrender.com";
+   const API_URL = "http://localhost:5050";
     const response = await fetch(`${API_URL}${url}`, {
         ...options,
         headers: {
             ...(options.body ? { "Content-Type": "application/json" } : {}),
             ...options.headers
-        
         }
     });
 
@@ -27,9 +28,29 @@ async function api(url, options = {}) {
     return data;
 }
 
+// Employee/Admin login selection
+function showEmployeeLogin() {
+    $("login-form").classList.remove("hidden");
+    $("admin-login-form").classList.add("hidden");
+    $("employee-register-option").classList.remove("hidden");
+
+    showMessage("");
+}
+
+function showAdminLogin() {
+    $("login-form").classList.add("hidden");
+    $("admin-login-form").classList.remove("hidden");
+    $("employee-register-option").classList.add("hidden");
+
+    showMessage("");
+}
+
+// Date formatting
 function formatDate(date) {
     if (!date) return "-";
+
     const d = new Date(date);
+
     return d.toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
@@ -40,9 +61,11 @@ function formatDate(date) {
 
 function todayString() {
     const now = new Date();
+
     const local = new Date(
         now.getTime() - now.getTimezoneOffset() * 60000
     );
+
     return local.toISOString().slice(0, 10);
 }
 
@@ -72,6 +95,7 @@ function updateDateSummary() {
 
     const start = new Date(from + "T00:00:00Z");
     const end = new Date(to + "T00:00:00Z");
+
     const days = Math.round((end - start) / 86400000) + 1;
 
     $("selected-period").textContent =
@@ -80,11 +104,13 @@ function updateDateSummary() {
     $("total-days").textContent = days;
 }
 
+// Display leave balance
 function displayBalance(data) {
     $("casual-leave-display").textContent = data.casualLeave;
     $("medical-leave-display").textContent = data.medicalLeave;
 }
 
+// Employee registration
 async function registerUser(event) {
     event.preventDefault();
 
@@ -100,17 +126,23 @@ async function registerUser(event) {
             })
         });
 
+        const registeredEmail = $("reg-email").value.trim();
+
         $("registration-form").reset();
         $("registration-section").classList.add("hidden");
         $("login-section").classList.remove("hidden");
-        $("email").value = $("reg-email").value.trim();
+
+        showEmployeeLogin();
+        $("email").value = registeredEmail;
 
         showMessage(data.message, "success");
+
     } catch (error) {
         showMessage(error.message);
     }
 }
 
+// Employee login
 async function loginUser(event) {
     event.preventDefault();
 
@@ -137,24 +169,62 @@ async function loginUser(event) {
         updateDateLimits();
 
         await loadLeaveHistory();
+
         showMessage(data.message, "success");
+
     } catch (error) {
         showMessage(error.message);
     }
 }
 
+// Admin login
+async function loginAdmin(event) {
+    event.preventDefault();
+
+    try {
+        const data = await api("/api/admin/login", {
+            method: "POST",
+            body: JSON.stringify({
+                email: $("admin-email").value.trim(),
+                password: $("admin-password").value
+            })
+        });
+
+        if (!data.token) {
+            throw new Error("Admin authentication token missing");
+        }
+
+        adminToken = data.token;
+
+        // Keep the token only for this browser tab session.
+        sessionStorage.setItem("adminToken", adminToken);
+
+        showMessage("Admin login successful", "success");
+
+        window.location.href = "/admin.html";
+
+    } catch (error) {
+        showMessage(error.message);
+    }
+}
+
+// Refresh leave balance
 async function refreshLeaveBalance() {
     if (!userId) return;
 
     try {
         const data = await api(`/api/leave-balance/${userId}`);
+
         displayBalance(data);
+
         showMessage("Leave balance updated", "success");
+
     } catch (error) {
         showMessage(error.message);
     }
 }
 
+// Apply for leave
 async function applyLeave(event) {
     event.preventDefault();
 
@@ -192,6 +262,7 @@ async function applyLeave(event) {
         });
 
         displayBalance(data);
+
         $("leave-form").reset();
         updateDateLimits();
 
@@ -202,45 +273,56 @@ async function applyLeave(event) {
             `${formatDate(data.leave.toDate)} (${data.leave.days} days).`,
             "success"
         );
+
     } catch (error) {
         showMessage(error.message);
     }
 }
 
+// Load employee leave history
 async function loadLeaveHistory() {
     if (!userId) return;
 
     try {
         const leaves = await api(`/api/leave-history/${userId}`);
+
         const tbody = $("leave-history");
+
         tbody.replaceChildren();
 
         if (!leaves.length) {
             const row = tbody.insertRow();
             const cell = row.insertCell();
-            cell.colSpan = 5;
+
+            cell.colSpan = 6;
             cell.textContent = "No applications yet";
+
             return;
         }
 
         leaves.forEach((leave) => {
             const row = tbody.insertRow();
 
-            [
+            const values = [
                 leave.type.charAt(0).toUpperCase() + leave.type.slice(1),
                 formatDate(leave.fromDate),
                 formatDate(leave.toDate),
                 leave.days,
-                leave.status
-            ].forEach((value) => {
+                leave.status,
+                leave.rejectionReason || "-"
+            ];
+
+            values.forEach((value) => {
                 row.insertCell().textContent = value;
             });
         });
+
     } catch (error) {
         showMessage(error.message);
     }
 }
 
+// Employee logout
 function logoutUser() {
     userId = null;
 
@@ -259,29 +341,53 @@ function logoutUser() {
     $("casual-leave-display").textContent = "0";
     $("medical-leave-display").textContent = "0";
 
+    showEmployeeLogin();
+
     showMessage("Logged out successfully", "success");
 }
 
+// Show registration
+function showRegistration() {
+    $("login-section").classList.add("hidden");
+    $("registration-section").classList.remove("hidden");
+
+    showMessage("");
+}
+
+// Back to login
+function showLogin() {
+    $("registration-section").classList.add("hidden");
+    $("login-section").classList.remove("hidden");
+
+    showEmployeeLogin();
+    showMessage("");
+}
+
+// Event listeners
 $("registration-form").addEventListener("submit", registerUser);
+
 $("login-form").addEventListener("submit", loginUser);
+
+$("admin-login-form").addEventListener("submit", loginAdmin);
+
 $("leave-form").addEventListener("submit", applyLeave);
 
 $("refresh-balance").addEventListener("click", refreshLeaveBalance);
+
 $("logout-button").addEventListener("click", logoutUser);
 
 $("from-date").addEventListener("change", updateDateLimits);
+
 $("to-date").addEventListener("change", updateDateSummary);
 
-$("show-registration").addEventListener("click", () => {
-    $("login-section").classList.add("hidden");
-    $("registration-section").classList.remove("hidden");
-    showMessage("");
-});
+$("show-registration").addEventListener("click", showRegistration);
 
-$("show-login").addEventListener("click", () => {
-    $("registration-section").classList.add("hidden");
-    $("login-section").classList.remove("hidden");
-    showMessage("");
-});
+$("show-login").addEventListener("click", showLogin);
 
+$("employee-login-option").addEventListener("click", showEmployeeLogin);
+
+$("admin-login-option").addEventListener("click", showAdminLogin);
+
+// Initial setup
+showEmployeeLogin();
 updateDateLimits();

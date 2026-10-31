@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,22 +14,55 @@
             <p>Manage your leave applications easily</p>
         </header>
 
+        <!-- LOGIN SECTION -->
         <section id="login-section" class="card">
             <h2>Login</h2>
+
+            <div class="login-options">
+                <button id="employee-login-option" class="btn" type="button">
+                    Employee Login
+                </button>
+
+                <button id="admin-login-option" class="btn secondary" type="button">
+                    Admin Login
+                </button>
+            </div>
+
+            <!-- EMPLOYEE LOGIN -->
             <form id="login-form">
+                <h3>Employee Login</h3>
+
                 <label for="email">Email</label>
                 <input type="email" id="email" required>
+
                 <button class="btn" type="submit">Login</button>
             </form>
-            <p>Don't have an account?
+
+            <!-- ADMIN LOGIN -->
+            <form id="admin-login-form" class="hidden">
+                <h3>Admin Login</h3>
+
+                <label for="admin-email">Admin Email</label>
+                <input type="email" id="admin-email" required>
+
+                <label for="admin-password">Password</label>
+                <input type="password" id="admin-password" required>
+
+                <button class="btn" type="submit">Admin Login</button>
+            </form>
+
+            <p id="employee-register-option">
+                Don't have an account?
                 <button id="show-registration" class="link-btn" type="button">
                     Create User
                 </button>
             </p>
         </section>
 
+        <!-- REGISTRATION SECTION -->
         <section id="registration-section" class="card hidden">
             <h2>Create User</h2>
+
             <form id="registration-form">
                 <label for="username">Username</label>
                 <input type="text" id="username" required>
@@ -57,39 +91,52 @@
             </p>
         </section>
 
+        <!-- EMPLOYEE DASHBOARD -->
         <section id="dashboard" class="hidden">
+
             <div class="card">
                 <div class="top-row">
                     <div>
                         <h2>Welcome, <span id="username-display"></span></h2>
-                        <p>Roll Number: <span id="roll-number-display"></span></p>
+                        <p>Roll Number:
+                            <span id="roll-number-display"></span>
+                        </p>
                     </div>
+
                     <button id="logout-button" class="logout-btn" type="button">
                         Logout
                     </button>
                 </div>
 
                 <h3>Available Leave Balance</h3>
+
                 <div class="balance-grid">
                     <div class="balance-box">
                         <p>Casual Leave</p>
                         <h2 id="casual-leave-display">0</h2>
                         <span>days</span>
                     </div>
+
                     <div class="balance-box">
                         <p>Medical Leave</p>
                         <h2 id="medical-leave-display">0</h2>
                         <span>days</span>
                     </div>
                 </div>
+
                 <button id="refresh-balance" class="btn secondary"
-                        type="button">Refresh Balance</button>
+                        type="button">
+                    Refresh Balance
+                </button>
             </div>
 
+            <!-- APPLY LEAVE -->
             <div class="card">
                 <h2>Apply for Leave</h2>
+
                 <form id="leave-form">
                     <label for="leave-type">Leave Type</label>
+
                     <select id="leave-type" required>
                         <option value="casual">Casual Leave</option>
                         <option value="medical">Medical Leave</option>
@@ -104,15 +151,19 @@
                     <div class="date-summary">
                         <p>Selected period</p>
                         <strong id="selected-period">Choose your dates</strong>
-                        <p>Total days: <strong id="total-days">0</strong></p>
+                        <p>Total days:
+                            <strong id="total-days">0</strong>
+                        </p>
                     </div>
 
                     <button class="btn" type="submit">Apply Leave</button>
                 </form>
             </div>
 
+            <!-- LEAVE HISTORY -->
             <div class="card">
                 <h2>Leave Application History</h2>
+
                 <div class="table-wrap">
                     <table>
                         <thead>
@@ -122,11 +173,13 @@
                                 <th>To</th>
                                 <th>Days</th>
                                 <th>Status</th>
+                                <th>Rejection Reason</th>
                             </tr>
                         </thead>
+
                         <tbody id="leave-history">
                             <tr>
-                                <td colspan="5">No applications yet</td>
+                                <td colspan="6">No applications yet</td>
                             </tr>
                         </tbody>
                     </table>
@@ -134,7 +187,11 @@
             </div>
         </section>
 
-        <div id="response-message" role="status" aria-live="polite"></div>
+        <!-- RESPONSE MESSAGE -->
+        <div id="response-message"
+             role="status"
+             aria-live="polite">
+        </div>
     </main>
 
     <script src="app.js"></script>
