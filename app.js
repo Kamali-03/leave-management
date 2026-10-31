@@ -35,7 +35,7 @@ function showEmployeeLogin() {
     $("employee-register-option").classList.remove("hidden");
 
     showMessage("");
-}
+
 
 function showAdminLogin() {
     $("login-form").classList.add("hidden");
@@ -201,7 +201,7 @@ async function loginAdmin(event) {
 
         showMessage("Admin login successful", "success");
 
-        window.location.href = "/admin.html";
+        window.location.href = "admin.html";
 
     } catch (error) {
         showMessage(error.message);
