@@ -1,4 +1,3 @@
-
 let userId = null;
 let adminToken = null;
 
@@ -10,7 +9,8 @@ function showMessage(message, type = "error") {
 }
 
 async function api(url, options = {}) {
-   const API_URL = " ";
+    const API_URL = "https://leave-management-6.onrender.com";
+
     const response = await fetch(`${API_URL}${url}`, {
         ...options,
         headers: {
@@ -75,8 +75,10 @@ function updateDateLimits() {
     $("from-date").min = today;
     $("to-date").min = $("from-date").value || today;
 
-    if ($("to-date").value &&
-        $("to-date").value < $("to-date").min) {
+    if (
+        $("to-date").value &&
+        $("to-date").value < $("to-date").min
+    ) {
         $("to-date").value = "";
     }
 
@@ -196,12 +198,11 @@ async function loginAdmin(event) {
 
         adminToken = data.token;
 
-        // Keep the token only for this browser tab session.
         sessionStorage.setItem("adminToken", adminToken);
 
         showMessage("Admin login successful", "success");
 
-        window.location.href = "/admin.html";
+        window.location.href = "admin.html";
 
     } catch (error) {
         showMessage(error.message);
@@ -365,27 +366,16 @@ function showLogin() {
 
 // Event listeners
 $("registration-form").addEventListener("submit", registerUser);
-
 $("login-form").addEventListener("submit", loginUser);
-
 $("admin-login-form").addEventListener("submit", loginAdmin);
-
 $("leave-form").addEventListener("submit", applyLeave);
-
 $("refresh-balance").addEventListener("click", refreshLeaveBalance);
-
 $("logout-button").addEventListener("click", logoutUser);
-
 $("from-date").addEventListener("change", updateDateLimits);
-
 $("to-date").addEventListener("change", updateDateSummary);
-
 $("show-registration").addEventListener("click", showRegistration);
-
 $("show-login").addEventListener("click", showLogin);
-
 $("employee-login-option").addEventListener("click", showEmployeeLogin);
-
 $("admin-login-option").addEventListener("click", showAdminLogin);
 
 // Initial setup

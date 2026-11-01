@@ -42,7 +42,7 @@ const leaveSchema = new mongoose.Schema({
 
     balanceDeducted: {
         type: Boolean,
-        default: true
+        default: false
     }
 
 }, { timestamps: true });
