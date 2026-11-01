@@ -1,12 +1,13 @@
-
 const token = sessionStorage.getItem("adminToken");
+
 const API_BASE_URL = "https://leave-management-6.onrender.com";
+
 const tableBody = document.getElementById("leave-table-body");
 const message = document.getElementById("admin-message");
 
 // Check admin login
 if (!token) {
-   window.location.href = "index.html";
+    window.location.href = "index.html";
 }
 
 // API request helper
@@ -24,7 +25,7 @@ async function adminRequest(url, options = {}) {
 
     if (response.status === 401 || response.status === 403) {
         sessionStorage.removeItem("adminToken");
-        window.location.href = "/";
+        window.location.href = "index.html";
         throw new Error(data.message || "Admin login required");
     }
 
@@ -50,6 +51,7 @@ async function loadLeaves() {
                     <td colspan="8">No leave requests found.</td>
                 </tr>
             `;
+
             message.textContent = "";
             return;
         }
@@ -63,8 +65,12 @@ async function loadLeaves() {
                 employee.username || "Unknown",
                 employee.rollNumber || "N/A",
                 leave.type || "",
-                leave.fromDate ? new Date(leave.fromDate).toLocaleDateString() : "",
-                leave.toDate ? new Date(leave.toDate).toLocaleDateString() : "",
+                leave.fromDate
+                    ? new Date(leave.fromDate).toLocaleDateString()
+                    : "",
+                leave.toDate
+                    ? new Date(leave.toDate).toLocaleDateString()
+                    : "",
                 leave.days,
                 leave.status
             ];
@@ -79,12 +85,14 @@ async function loadLeaves() {
 
             if (leave.status === "Applied") {
                 const approveButton = document.createElement("button");
+
                 approveButton.textContent = "Approve";
                 approveButton.className = "approve-btn";
 
                 approveButton.onclick = () => approveLeave(leave._id);
 
                 const rejectButton = document.createElement("button");
+
                 rejectButton.textContent = "Reject";
                 rejectButton.className = "reject-btn";
 
@@ -92,6 +100,7 @@ async function loadLeaves() {
 
                 actionCell.appendChild(approveButton);
                 actionCell.appendChild(rejectButton);
+
             } else {
                 actionCell.textContent = leave.status;
             }
@@ -109,7 +118,9 @@ async function loadLeaves() {
 
 // Approve leave
 async function approveLeave(id) {
-    const confirmed = confirm("Are you sure you want to approve this leave?");
+    const confirmed = confirm(
+        "Are you sure you want to approve this leave?"
+    );
 
     if (!confirmed) return;
 
@@ -120,6 +131,7 @@ async function approveLeave(id) {
         );
 
         alert(data.message);
+
         loadLeaves();
 
     } catch (error) {
@@ -129,7 +141,9 @@ async function approveLeave(id) {
 
 // Reject leave
 async function rejectLeave(id) {
-    const reason = prompt("Enter the reason for rejecting this leave:");
+    const reason = prompt(
+        "Enter the reason for rejecting this leave:"
+    );
 
     if (reason === null) return;
 
@@ -148,6 +162,7 @@ async function rejectLeave(id) {
         );
 
         alert(data.message);
+
         loadLeaves();
 
     } catch (error) {
@@ -158,7 +173,7 @@ async function rejectLeave(id) {
 // Admin logout
 document.getElementById("logout-btn").addEventListener("click", () => {
     sessionStorage.removeItem("adminToken");
-    window.location.href = "/";
+    window.location.href = "index.html";
 });
 
 // Load dashboard
